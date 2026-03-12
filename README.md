@@ -186,3 +186,20 @@ Este projeto foi desenvolvido como atividade prática da disciplina **Banco de D
 * CRUD com MongoDB
 * Integração entre **API e banco de dados**
 * Estruturação de aplicações **Full Stack**
+
+---
+
+# 👥 Equipe
+
+Projeto desenvolvido por:
+
+* Johnny Xavier
+* Juliano Matheus
+* Luciano Hugo
+* Nathalya Christinne
+* Raíssa Martins
+
+Disciplina: **Banco de Dados II**
+Curso: **Engenharia de Software**
+
+**ICET - UFAM**
