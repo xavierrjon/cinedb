@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+
+    <title>Cine DB</title>
+
+</head>
+
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-film"></i>
+                Cine<span>DB</span>
+                <div class="db-status" id="db-status">
+                    <i class="fas fa-database"></i> MongoDB Online
+                </div>
+            </div>
+            <nav class="hidden" id="main-nav">
+                <ul>
+                    <li><a href="#" class="nav-link" data-section="home"><i class="fas fa-home"></i> Início</a></li>
+                    <li><a href="#" class="nav-link" data-section="movies"><i class="fas fa-list"></i> Meus Filmes</a></li>
+                    <li><a href="#" class="nav-link" data-section="public-movies"><i class="fas fa-globe"></i> Filmes Públicos</a></li>
+                    <li><a href="#" class="nav-link" data-section="add-movie"><i class="fas fa-plus-circle"></i> Adicionar</a></li>
+                    <li><a href="#" class="nav-link" data-section="favorites"><i class="fas fa-heart"></i> Favoritos</a></li>
+                </ul>
+            </nav>
+            <div class="user-info hidden" id="user-info">
+                <span id="username-display">Usuário</span>
+                <button id="logout-btn" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Sair</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Seção de Configuração -->
+        <section id="config-section" class="section active">
+            <div class="card">
+                <h2 class="section-title"><i class="fas fa-cog"></i> Configuração do Sistema</h2>
+                
+                <div class="form-group">
+                    <label for="api-url"><i class="fas fa-link"></i> URL da API Backend</label>
+                    <input type="text" id="api-url" value="http://localhost:3000" readonly>
+                    <small style="color: #ccc; margin-top: 0.5rem; display: block;">
+                        Backend Node.js conectado ao MongoDB real
+                    </small>
+                </div>
+                
+                <button id="connect-api" class="btn"><i class="fas fa-plug"></i> Conectar ao Sistema</button>
+                
+                <div class="config-steps">
+                    <h3 style="color: var(--secondary); margin-bottom: 1rem;">
+                        <i class="fas fa-list-ol"></i> Passos para Configurar:
+                    </h3>
+                    <ol>
+                        <li><strong>Inicie o MongoDB</strong> (<code>net start MongoDB</code>)</li>
+                        <li><strong>Instale as dependências</strong>: <code>npm install</code></li>
+                        <li><strong>Execute o backend</strong>: <code>npm start</code></li>
+                        <li><strong>Clique em "Conectar ao Sistema" acima</strong></li>
+                    </ol>
+                    
+                    <div style="background: rgba(52, 152, 219, 0.1); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                        <h4 style="color: var(--secondary); margin-bottom: 0.5rem;">
+                            <i class="fas fa-check-circle"></i> Status do Sistema:
+                        </h4>
+                        <p id="system-status">Aguardando conexão...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Login -->
+        <section id="login-section" class="section">
+            <div class="card">
+                <h2 class="section-title"><i class="fas fa-sign-in-alt"></i> Login</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email"><i class="fas fa-envelope"></i> E-mail</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password"><i class="fas fa-lock"></i> Senha</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="btn"><i class="fas fa-sign-in-alt"></i> Entrar</button>
+                </form>
+                <p style="margin-top: 1rem; text-align: center;">
+                    Não tem uma conta? <a href="#" id="show-register" style="color: var(--secondary);">Cadastre-se</a>
+                </p>
+            </div>
+        </section>
+
+        <!-- Seção de Cadastro -->
+        <section id="register-section" class="section">
+            <div class="card">
+                <h2 class="section-title"><i class="fas fa-user-plus"></i> Cadastro</h2>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="register-name"><i class="fas fa-user"></i> Nome</label>
+                        <input type="text" id="register-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email"><i class="fas fa-envelope"></i> E-mail</label>
+                        <input type="email" id="register-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password"><i class="fas fa-lock"></i> Senha</label>
+                        <input type="password" id="register-password" required>
+                    </div>
+                    <button type="submit" class="btn"><i class="fas fa-user-plus"></i> Cadastrar</button>
+                </form>
+                <p style="margin-top: 1rem; text-align: center;">
+                    Já tem uma conta? <a href="#" id="show-login" style="color: var(--secondary);">Faça login</a>
+                </p>
+            </div>
+        </section>
+
+        <!-- Seção Inicial -->
+        <section id="home-section" class="section">
+            <h2 class="section-title">
+                <div class="title-content">
+                    <i class="fas fa-home"></i> Bem-vindo ao CineDB
+                </div>
+                <button id="refresh-stats" class="btn" style="font-size: 0.9rem;">
+                    <i class="fas fa-sync-alt"></i> Atualizar
+                </button>
+            </h2>
+            
+            <div class="community-highlight">
+                <h3 style="color: var(--public-color); margin-bottom: 0.5rem;">
+                    <i class="fas fa-users"></i> Comunidade Ativa
+                </h3>
+                <p>Explore filmes públicos, favorite os que você gosta e compartilhe seus próprios filmes!</p>
+            </div>
+            
+            <div class="stats-grid" id="stats-container">
+                <!-- Estatísticas serão carregadas aqui -->
+            </div>
+            
+            <div class="card">
+                <h3 style="margin-bottom: 1rem; color: var(--secondary);">
+                    <i class="fas fa-info-circle"></i> Sistema Conectado ao MongoDB Real
+                </h3>
+                <p>Seu sistema de gerenciamento de filmes está funcionando com banco de dados NoSQL real!</p>
+                
+                <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(52, 152, 219, 0.1); border-radius: 8px;">
+                    <h4 style="color: var(--secondary); margin-bottom: 0.5rem;">
+                        <i class="fas fa-database"></i> Status do Banco:
+                    </h4>
+                    <p>✅ Conectado ao MongoDB Real</p>
+                    <p>📊 Banco: <code>cineDB</code></p>
+                    <p>🗃️ Collections: <code>users</code>, <code>movies</code></p>
+                    <p>🌐 API: <code>http://localhost:3000</code></p>
+                </div>
+                
+                <div class="public-info" style="margin-top: 1rem;">
+                    <i class="fas fa-globe"></i>
+                    <div>
+                        <strong>Recursos Sociais:</strong> Favorite filmes de outros usuários, veja contadores de favoritos e interaja com a comunidade!
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção Meus Filmes -->
+        <section id="movies-section" class="section">
+            <h2 class="section-title">
+                <div class="title-content">
+                    <i class="fas fa-list"></i> Meus Filmes
+                </div>
+            </h2>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-movie" placeholder="Buscar filmes por título...">
+            </div>
+            <div id="movies-container" class="movies-grid">
+                <!-- Filmes serão carregados aqui -->
+            </div>
+        </section>
+
+        <!-- Seção Filmes Públicos -->
+        <section id="public-movies-section" class="section">
+            <h2 class="section-title">
+                <div class="title-content">
+                    <i class="fas fa-globe"></i> Catálogo Público
+                </div>
+                <span style="font-size: 0.9rem; color: #ccc;">
+                    <i class="fas fa-users"></i> Filmes compartilhados pela comunidade
+                </span>
+            </h2>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-public-movie" placeholder="Buscar filmes públicos...">
+            </div>
+            <div id="public-movies-container" class="movies-grid">
+                <!-- Filmes públicos serão carregados aqui -->
+            </div>
+        </section>
+
+        <!-- Seção Adicionar Filme -->
+        <section id="add-movie-section" class="section">
+            <h2 class="section-title"><i class="fas fa-plus-circle"></i> Adicionar Filme</h2>
+            <div class="card">
+                <form id="add-movie-form">
+                    <div class="form-group">
+                        <label for="movie-title"><i class="fas fa-film"></i> Título *</label>
+                        <input type="text" id="movie-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="movie-year"><i class="fas fa-calendar"></i> Ano</label>
+                        <input type="number" id="movie-year" min="1900" max="2030">
+                    </div>
+                    <div class="form-group">
+                        <label for="movie-genre"><i class="fas fa-tags"></i> Gênero(s) (separados por vírgula)</label>
+                        <input type="text" id="movie-genre" placeholder="Ex: Ação, Ficção Científica">
+                    </div>
+                    <div class="form-group">
+                        <label for="movie-director"><i class="fas fa-user"></i> Diretor</label>
+                        <input type="text" id="movie-director">
+                    </div>
+                    <div class="form-group">
+                        <label for="movie-synopsis"><i class="fas fa-file-text"></i> Sinopse</label>
+                        <textarea id="movie-synopsis"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="movie-trailer"><i class="fab fa-youtube youtube-icon"></i> URL do Trailer (YouTube)</label>
+                        <input type="url" id="movie-trailer" placeholder="https://www.youtube.com/watch?v=...">
+                        <small style="color: #ccc; margin-top: 0.5rem; display: block;">
+                            Cole o link completo do YouTube. O trailer será exibido automaticamente.
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-star"></i> Sua Avaliação</label>
+                        <div class="rating">
+                            <input type="radio" id="star5" name="rating" value="5">
+                            <label for="star5">★</label>
+                            <input type="radio" id="star4" name="rating" value="4">
+                            <label for="star4">★</label>
+                            <input type="radio" id="star3" name="rating" value="3">
+                            <label for="star3">★</label>
+                            <input type="radio" id="star2" name="rating" value="2">
+                            <label for="star2">★</label>
+                            <input type="radio" id="star1" name="rating" value="1">
+                            <label for="star1">★</label>
+                        </div>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="movie-favorite">
+                        <label for="movie-favorite"><i class="fas fa-heart"></i> Marcar como favorito</label>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="movie-public">
+                        <label for="movie-public">
+                            <i class="fas fa-globe"></i> Tornar filme público (visível para todos os usuários)
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Adicionar Filme</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Seção Favoritos -->
+        <section id="favorites-section" class="section">
+            <h2 class="section-title"><i class="fas fa-heart"></i> Meus Filmes Favoritos</h2>
+            <div id="favorites-container" class="movies-grid">
+                <!-- Filmes favoritos serão carregados aqui -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal de Edição de Filme -->
+    <div class="modal" id="edit-movie-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="color: var(--secondary);"><i class="fas fa-edit"></i> Editar Filme</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="edit-movie-form">
+                <input type="hidden" id="edit-movie-id">
+                <div class="form-group">
+                    <label for="edit-movie-title">Título *</label>
+                    <input type="text" id="edit-movie-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-movie-year">Ano</label>
+                    <input type="number" id="edit-movie-year" min="1900" max="2030">
+                </div>
+                <div class="form-group">
+                    <label for="edit-movie-genre">Gênero(s) (separados por vírgula)</label>
+                    <input type="text" id="edit-movie-genre" placeholder="Ex: Ação, Ficção Científica">
+                </div>
+                <div class="form-group">
+                    <label for="edit-movie-director">Diretor</label>
+                    <input type="text" id="edit-movie-director">
+                </div>
+                <div class="form-group">
+                    <label for="edit-movie-synopsis">Sinopse</label>
+                    <textarea id="edit-movie-synopsis"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-movie-trailer"><i class="fab fa-youtube youtube-icon"></i> URL do Trailer (YouTube)</label>
+                    <input type="url" id="edit-movie-trailer" placeholder="https://www.youtube.com/watch?v=...">
+                </div>
+                <div class="form-group">
+                    <label>Avaliação</label>
+                    <div class="rating" id="edit-rating">
+                        <input type="radio" id="edit-star5" name="edit-rating" value="5">
+                        <label for="edit-star5">★</label>
+                        <input type="radio" id="edit-star4" name="edit-rating" value="4">
+                        <label for="edit-star4">★</label>
+                        <input type="radio" id="edit-star3" name="edit-rating" value="3">
+                        <label for="edit-star3">★</label>
+                        <input type="radio" id="edit-star2" name="edit-rating" value="2">
+                        <label for="edit-star2">★</label>
+                        <input type="radio" id="edit-star1" name="edit-rating" value="1">
+                        <label for="edit-star1">★</label>
+                    </div>
+                </div>
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="edit-movie-favorite">
+                    <label for="edit-movie-favorite">Marcar como favorito</label>
+                </div>
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="edit-movie-public">
+                    <label for="edit-movie-public">Tornar filme público</label>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn btn-success" style="flex: 1;"><i class="fas fa-save"></i> Salvar</button>
+                    <button type="button" class="btn btn-danger" id="cancel-edit" style="flex: 1;"><i class="fas fa-times"></i> Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
